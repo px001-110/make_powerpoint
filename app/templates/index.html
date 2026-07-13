@@ -1,35 +1,44 @@
 {% extends "base.html" %}
 
+{% block title %}
+PowerPoint自動生成
+{% endblock %}
+
 {% block content %}
+
 <div class="container">
     <h1>PowerPoint自動生成</h1>
     <p>Wordファイルからパワーポイントを生成するwebアプリです。</p>
     <p>下の点線内にWordファイルをドラッグ&ドロップするか、ファイル選択ボタンを押してWordファイルを選択してください。</p>
 
-    <div id="drop-zone">
+    <form id="upload-form" action="{{ url_for('main.upload') }}" method="POST" enctype="multipart/form-data">
 
-        ここへファイルをドラッグ&ドロップ
+        <div id="drop-zone">
 
-    </div>
+            ここへファイルをドラッグ&ドロップ
+
+        </div>
 
 
-    <input type="file" id="file-input" multiple>
+        <input type="file" id="file-input" name="files" multiple>
 
-    <ul id="file-list"></ul>
+        <ul id="file-list"></ul>
 
-    <div class="filename-area">
+        <div class="filename-area">
 
-        <label>
-            出力ファイル名（入力がなければ「日付＋自動生成」という名前になります。）
-        </label>
+            <label>
+                出力ファイル名
+            </label>
 
-        <input type="text" id="output-name" placeholder="ここに名前を入力してください。">
+            <input type="text" id="output-name" name="output-name" placeholder="入力しない場合は日付＋自動生成">
 
-    </div>
+        </div>
 
-    <button id="upload-btn">
-        生成する
-    </button>
+        <button id="upload-btn" type="submit">
+            生成する
+        </button>
+
+    </form>
 
     <div id="loading">
         生成中...

@@ -3,7 +3,8 @@ from flask import (
     render_template,
     request,
     send_file,
-    current_app
+    current_app,
+    session
 )
 from pptx import Presentation
 from urllib.parse import quote
@@ -16,6 +17,9 @@ from .services.file_service import (
     save_upload_file,
     cleanup_old_files
 )
+
+from .services.preview_generator import PreviewGenerator
+from .services.find_soffice import find_soffice
 
 main = Blueprint("main", __name__)
 
@@ -79,22 +83,41 @@ def upload():
 
     output_path = output_path.resolve()
 
-    print(output_path)
-
     prs.save(output_path)
 
-    print(output_path.exists())
+    session["ppt_path"] = str(output_path)
+    session["download_name"] = f"{output_name}.pptx"
 
-    encoded_name = quote(f"{output_name}.pptx")
+    preview = PreviewGenerator(
+        libreoffice_path=find_soffice()
+    )
 
-    response = send_file(
-        str(output_path),
+    preview_dir = current_app.static_folder / Path("previews") / "session123"
+
+    images = preview.generate(
+        output_path,
+        preview_dir
+    )
+    print(images)
+
+    return render_template(
+        "preview.html",
+        images=images,
+        preview_dir="previews/session123",
+    )
+
+@main.route("/download")
+def download():
+    ppt_path = session.get("ppt_path")
+    
+    if not ppt_path:
+        return "PowerPointファイルが見つかりません。", 404
+    
+    download_name = session.get("download_name", "自動生成.pptx")
+
+    return send_file(
+        ppt_path,
         as_attachment=True,
-        download_name=f"{output_name}.pptx"
+        download_name=download_name,
+        mimetype="application/vnd.openxmlformats-officedocument.presentationml.presentation"
     )
-
-    response.headers["Content-Disposition"] = (
-        f"attachment; filename*=UTF-8''{encoded_name}"
-    )
-
-    return response

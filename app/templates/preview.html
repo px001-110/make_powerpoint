@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}
+プレビュー
+{% endblock %}
+
+{% block content %}
+
+{% for image in images %}
+
+<div class="slide">
+    <img src="{{ url_for('static', filename=preview_dir + '/' + image) }}">
+</div>
+
+{% endfor %}
+
+<div class="download">
+    <form action="{{ url_for('main.download') }}" method="GET">
+        <button type="submit">
+            ダウンロード
+        </button>
+    </form>
+</div>
+
+{% endblock %}

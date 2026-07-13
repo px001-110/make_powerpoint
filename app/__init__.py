@@ -17,5 +17,6 @@ def create_app():
     app.config["OUTPUT_DIR"].mkdir(exist_ok=True)
 
     app.register_blueprint(main)
+    app.secret_key ="qwertyuiop"
 
     return app

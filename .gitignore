@@ -4,10 +4,11 @@ uploads/*.docx
 uploads/*.pptx
 
 # 仮想環境除外
-venv/
+.venv/
 .env
 
 # python
 __pychache__/
 *.pyc
 
+static/previews/session123
